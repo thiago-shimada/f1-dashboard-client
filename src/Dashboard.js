@@ -193,11 +193,41 @@ function Dashboard() {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Falha no upload do arquivo');
+        
+        // Provide specific error messages based on status code
+        let errorMessage = errorData.message || 'Falha no upload do arquivo';
+        
+        if (response.status === 409) {
+          errorMessage = `❌ Conflito de dados: ${errorData.message}\n\nAlguns pilotos podem já existir no banco de dados.`;
+        } else if (response.status === 400) {
+          if (errorData.message.includes('format')) {
+            errorMessage = `❌ Formato inválido: ${errorData.message}\n\nVerifique se o arquivo CSV está no formato correto:\ndriverref,code,forename,surname,dob,nationality,number,url`;
+          } else {
+            errorMessage = `❌ Dados inválidos: ${errorData.message}`;
+          }
+        } else if (response.status === 403) {
+          errorMessage = `🚫 Acesso negado: ${errorData.message}`;
+        } else if (response.status === 500) {
+          errorMessage = `⚠️ Erro do servidor: ${errorData.message}`;
+        }
+        
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();
-      alert(`Arquivo processado com sucesso! ${result.inserted || 0} pilotos inseridos.`);
+      
+      // Create detailed success message from the new response format
+      const successMessage = `✅ ${result.message}
+
+📁 Arquivo: ${result.fileName || 'arquivo'}
+📊 Linhas estimadas: ${result.estimatedRows || 0}
+✔️ Pilotos inseridos: ${result.inserted || 0}
+⏭️ Registros ignorados: ${result.skipped || 0}
+🚀 Método: ${result.uploadMethod || 'Upload padrão'}
+
+${result.inserted > 0 ? `Sucesso! ${result.inserted} piloto(s) adicionado(s) ao banco de dados.` : 'Nenhum piloto novo foi adicionado.'}`;
+      
+      alert(successMessage);
       closeModal();
       // Refresh views
       fetchViews();
@@ -548,11 +578,14 @@ function Dashboard() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Selecionar Arquivo</label>
                   <input
                     type="file"
-                    accept=".csv,.xlsx,.xls"
+                    accept=".csv"
                     onChange={handleFileChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Formatos aceitos: CSV, Excel (.xlsx, .xls)</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Formato aceito: CSV apenas<br/>
+                    Colunas esperadas: driverref,code,forename,surname,dob,nationality,number,url
+                  </p>
                 </div>
                 <div className="flex justify-end space-x-3 pt-4">
                   <button
