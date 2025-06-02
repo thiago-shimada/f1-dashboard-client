@@ -16,7 +16,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchViews();
-  }, [navigate]);
+  }, [navigate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchViews = async () => {
     try {
@@ -108,7 +108,7 @@ function Dashboard() {
         throw new Error(errorData.message || 'Falha ao inserir piloto');
       }
       
-      const result = await response.json();
+      await response.json();
       alert('Piloto inserido com sucesso!');
       closeModal();
       // Refresh views
@@ -138,7 +138,7 @@ function Dashboard() {
         throw new Error(errorData.message || 'Falha ao inserir construtor');
       }
       
-      const result = await response.json();
+      await response.json();
       alert('Construtor inserido com sucesso!');
       closeModal();
       // Refresh views
@@ -228,6 +228,15 @@ function Dashboard() {
     if (userRole === 'admin' || userRole === 'Administrador') {
       return (
         <div className="mb-6 flex flex-wrap gap-3">
+          <Link
+            to="/reports"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Relatórios
+          </Link>
           <button
             onClick={() => openModal('insertDriver')}
             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center"
@@ -251,6 +260,15 @@ function Dashboard() {
     } else if (userRole === 'escuderia' || userRole === 'Escuderia') {
       return (
         <div className="mb-6 flex flex-wrap gap-3">
+          <Link
+            to="/reports"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Relatórios
+          </Link>
           <button
             onClick={() => openModal('searchDrivers')}
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 flex items-center"
@@ -269,6 +287,20 @@ function Dashboard() {
             </svg>
             Inserir Pilotos de Arquivo
           </button>
+        </div>
+      );
+    } else if (userRole === 'piloto' || userRole === 'Piloto') {
+      return (
+        <div className="mb-6 flex flex-wrap gap-3">
+          <Link
+            to="/reports"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Relatórios
+          </Link>
         </div>
       );
     }

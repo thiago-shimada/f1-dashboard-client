@@ -9,6 +9,7 @@ import './App.css';
 import Login from './Login';
 import Dashboard from './Dashboard';
 import ViewDetails from './ViewDetails';
+import Reports from './Reports';
 
 // A simple ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -56,6 +57,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ViewDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <Reports />
               </ProtectedRoute>
             }
           />
