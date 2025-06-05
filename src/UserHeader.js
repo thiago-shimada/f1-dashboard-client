@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { fetchWithAuth } from './utils/api';
 
 function UserHeader({ userRole, onLogout, showLogout = true, title = "Dashboard" }) {
   const [userInfo, setUserInfo] = useState(null);
@@ -9,7 +10,7 @@ function UserHeader({ userRole, onLogout, showLogout = true, title = "Dashboard"
     const fetchUserInfo = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/user-info');
+        const response = await fetchWithAuth('/api/user-info');
         if (!response.ok) {
           throw new Error('Failed to fetch user information');
         }
