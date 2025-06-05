@@ -11,13 +11,24 @@ function Login() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/check-auth');
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const response = await fetch('/check-auth', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         const data = await response.json();
         if (data.isAuthenticated) {
           navigate('/dashboard');
+        } else {
+          // Token is invalid, remove it
+          localStorage.removeItem('token');
         }
       } catch (error) {
         console.error('Error checking auth status:', error);
+        localStorage.removeItem('token');
       }
     };
     checkAuth();
@@ -26,7 +37,7 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('/login', { // Assuming the server is on the same host/port or proxied
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,6 +48,8 @@ function Login() {
       setMessage(data.message);
       if (response.ok) {
         console.log('Login successful', data);
+        // Store the JWT token in localStorage
+        localStorage.setItem('token', data.token);
         navigate('/dashboard'); // Redirect to dashboard on successful login
       }
     } catch (error) {

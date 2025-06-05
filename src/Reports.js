@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import UserHeader from './UserHeader';
+import { fetchWithAuth, logout } from './utils/api';
 
 function Reports() {
   const [reports, setReports] = useState([]);
@@ -52,7 +53,7 @@ function Reports() {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/reports');
+      const response = await fetchWithAuth('/api/reports');
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch reports');
@@ -77,7 +78,7 @@ function Reports() {
       setExecutingReport(reportId);
       setError('');
       
-      const response = await fetch('/api/reports/execute', {
+      const response = await fetchWithAuth('/api/reports/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -107,19 +108,8 @@ function Reports() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/logout', { method: 'POST' });
-      const data = await response.json();
-      if (response.ok) {
-        navigate('/login');
-      } else {
-        setError(data.message || 'Logout failed');
-      }
-    } catch (err) {
-      console.error('Logout error:', err);
-      setError('Logout failed. Please try again.');
-    }
+  const handleLogout = () => {
+    logout(navigate);
   };
 
   const openDetailModal = (reportData) => {

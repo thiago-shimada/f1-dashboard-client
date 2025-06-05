@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import UserHeader from './UserHeader';
+import { fetchWithAuth, logout } from './utils/api';
 
 function ViewDetails() {
   const [viewData, setViewData] = useState(null);
@@ -18,7 +19,7 @@ function ViewDetails() {
   const fetchViewData = async (page = currentPage, limit = pageSize) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/view/${viewName}?page=${page}&limit=${limit}`);
+      const response = await fetchWithAuth(`/api/view/${viewName}?page=${page}&limit=${limit}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch view data');
@@ -58,34 +59,8 @@ function ViewDetails() {
     fetchViewData(1, newPageSize);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/logout', { method: 'POST' });
-      const data = await response.json();
-      if (response.ok) {
-        navigate('/login');
-      } else {
-        setError(data.message || 'Falha no logout');
-      }
-    } catch (err) {
-      console.error('Logout error:', err);
-      setError('Falha no logout. Tente novamente.');
-    }
-  };
-
-  const getRoleDisplayName = (role) => {
-    switch (role) {
-      case 'admin': 
-      case 'Administrador': 
-        return 'Administrador';
-      case 'escuderia': 
-      case 'Escuderia': 
-        return 'Escuderia';
-      case 'piloto': 
-      case 'Piloto': 
-        return 'Piloto';
-      default: return role;
-    }
+  const handleLogout = () => {
+    logout(navigate);
   };
 
   const renderPaginationControls = () => {

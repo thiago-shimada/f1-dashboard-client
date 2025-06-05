@@ -10,21 +10,35 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import ViewDetails from './ViewDetails';
 import Reports from './Reports';
+import { fetchWithAuth } from './utils/api';
 
 // A simple ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
-  // This is a placeholder for actual auth checking logic
-  // In a real app, you'd check a token, session, or context
   const [isAuthenticated, setIsAuthenticated] = React.useState(null);
 
   React.useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/check-auth');
-        const data = await response.json();
-        setIsAuthenticated(data.isAuthenticated);
+        // Check if JWT token exists in localStorage
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setIsAuthenticated(false);
+          return;
+        }
+
+        // Validate the token with the server
+        const response = await fetchWithAuth('/check-auth');
+        if (response.ok) {
+          const data = await response.json();
+          setIsAuthenticated(data.isAuthenticated);
+        } else {
+          // Token is invalid or expired
+          localStorage.removeItem('token');
+          setIsAuthenticated(false);
+        }
       } catch (error) {
         console.error('Error checking auth status for protected route:', error);
+        localStorage.removeItem('token');
         setIsAuthenticated(false);
       }
     };

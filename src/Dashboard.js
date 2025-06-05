@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import UserHeader from './UserHeader';
+import { fetchWithAuth, logout } from './utils/api';
 
 function Dashboard() {
   const [views, setViews] = useState([]);
@@ -21,7 +22,7 @@ function Dashboard() {
   const fetchViews = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/views');
+      const response = await fetchWithAuth('/api/views');
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch views');
@@ -43,18 +44,7 @@ function Dashboard() {
   };
 
   const handleLogout = async () => {
-    try {
-      const response = await fetch('/logout', { method: 'POST' });
-      const data = await response.json();
-      if (response.ok) {
-        navigate('/login');
-      } else {
-        setError(data.message || 'Logout failed');
-      }
-    } catch (err) {
-      console.error('Logout error:', err);
-      setError('Logout failed. Please try again.');
-    }
+    await logout();
   };
 
   // Modal management functions
@@ -95,11 +85,8 @@ function Dashboard() {
     setActionLoading(true);
     setError('');
     try {
-      const response = await fetch('/api/drivers', {
+      const response = await fetchWithAuth('/api/drivers', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(formData),
       });
       
@@ -125,11 +112,8 @@ function Dashboard() {
     setActionLoading(true);
     setError('');
     try {
-      const response = await fetch('/api/constructors', {
+      const response = await fetchWithAuth('/api/constructors', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(formData),
       });
       
@@ -155,7 +139,7 @@ function Dashboard() {
     setActionLoading(true);
     setError('');
     try {
-      const response = await fetch(`/api/search-drivers?surname=${encodeURIComponent(formData.surname)}`);
+      const response = await fetchWithAuth(`/api/search-drivers?surname=${encodeURIComponent(formData.surname)}`);
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -186,8 +170,9 @@ function Dashboard() {
       const uploadFormData = new FormData();
       uploadFormData.append('file', formData.file);
       
-      const response = await fetch('/api/upload-drivers', {
+      const response = await fetchWithAuth('/api/upload-drivers', {
         method: 'POST',
+        headers: {}, // Let browser set Content-Type for FormData
         body: uploadFormData,
       });
       
